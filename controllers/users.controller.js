@@ -8,20 +8,20 @@ module.exports.create = (req, res, next) => {
     })
     .then(user => {
       if (user != null) {
-        next(new ApiError('User already registered', 400));
+        res.status(400).json({
+          message: 'User already registered'
+        });
       } else {
         user = new User({
           email: req.body.email,
           password: req.body.password,
         });
-        
         user
           .save()
           .then(() => {
             res.status(200).json(user);
           })
           .catch(error => {
-            
             if (error instanceof mongoose.Error.ValidationError) {
               next(new ApiError(error.errors, 400));
             } else {

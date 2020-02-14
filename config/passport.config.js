@@ -1,6 +1,5 @@
 const User = require('../models/user.model');
 const LocalStrategy = require('passport-local').Strategy;
-const ApiError = require('../models/api-error.model');
 
 module.exports.setup = (passport) => {
   passport.serializeUser((user, next) => {
