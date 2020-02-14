@@ -1,11 +1,11 @@
 require("dotenv").config();
 const mongoose = require('mongoose');
-const DB_NAME = 'heroku-wht';
-const MONGODB_URI = process.env.MONGODB_URI;
-//  || `mongodb://localhost/${DB_NAME}`;
+const DB_NAME = 'motor';
+// const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = `mongodb://localhost/${DB_NAME}`;
 
 mongoose.Promise = Promise;
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true , useCreateIndex: true })
   .then(() => {
     console.info(`Connect to db ${DB_NAME}`);
   })

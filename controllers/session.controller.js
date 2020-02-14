@@ -5,11 +5,10 @@ module.exports.create = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   console.log("AAAAAA");
-  console.log('Params =' + JSON.stringify(req.params));
+  console.log('Params = ' + JSON.stringify(req.params));
   console.log('Body = ' + JSON.stringify(req.body));
   // console.log('RES =' + res.toString());
   
-  res.status(200).send({WHATABYTE: 'Food For Devs'});
   
   if (!email || !password) {
     next(new ApiError('Email, password are required', 400));
@@ -24,6 +23,10 @@ module.exports.create = (req, res, next) => {
           if (err) {
             next(err);
           } else {
+            console.log("AAAAAAAAAAAAA");
+            console.log("AAAAAAAAAAAAA");
+            console.log("AAAAAAAAAAAAA");
+            
             res.json(user);
           }
         });

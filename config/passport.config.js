@@ -16,7 +16,7 @@ module.exports.setup = (passport) => {
   });
 
   passport.use('local-auth', new LocalStrategy({
-    usernameField: 'email',
+    emailField: 'email',
     passwordField: 'password'
   }, (email, password, next) => {
     User.findOne({ email: email })
@@ -29,6 +29,7 @@ module.exports.setup = (passport) => {
               if (match) {
                 next(null, user);
               } else {
+                
                 next(null, null, { password: 'Invalid email or password' });
               }
             })
