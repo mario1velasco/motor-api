@@ -19,6 +19,7 @@ module.exports.create = (req, res, next) => {
         user
           .save()
           .then(() => {
+            console.log(`User ${user.email} has been created`);
             res.status(200).json(user);
           })
           .catch(error => {

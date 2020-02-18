@@ -1,32 +1,31 @@
 const passport = require('passport');
 const ApiError = require('../models/api-error.model');
 
-module.exports.create = (req, res, next) => {
+module.exports.authenticate = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  console.log("AAAAAA");
   console.log('Params = ' + JSON.stringify(req.params));
   console.log('Body = ' + JSON.stringify(req.body));
-  // console.log('RES =' + res.toString());
-  
-  
+
+
   if (!email || !password) {
-    next(new ApiError('Email, password are required', 400));
+    res.status(400).json({
+      message: 'Email, password are required'
+    });
   } else {
     passport.authenticate('local-auth', (err, user, message) => {
       if (err) {
         next(err);
       } else if (!user) {
-        next(new ApiError(message, 401));
+        res.status(401).json({
+          message: message
+        });
       } else {
         req.login(user, (err) => {
           if (err) {
             next(err);
           } else {
-            console.log("AAAAAAAAAAAAA");
-            console.log("AAAAAAAAAAAAA");
-            console.log("AAAAAAAAAAAAA");
-            
+            console.log(`Auth Ok for user ${user.email}`);
             res.json(user);
           }
         });

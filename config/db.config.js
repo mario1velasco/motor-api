@@ -1,14 +1,12 @@
 require("dotenv").config();
 const mongoose = require('mongoose');
-const DB_NAME = 'motor';
-// const MONGODB_URI = process.env.MONGODB_URI;
-const MONGODB_URI = `mongodb://localhost/${DB_NAME}`;
+const MONGODB = `${process.env.MONGODB_URI}${process.env.DB_NAME}`;
 
 mongoose.Promise = Promise;
-mongoose.connect(MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true , useCreateIndex: true })
+mongoose.connect(MONGODB, {useNewUrlParser: true, useUnifiedTopology: true , useCreateIndex: true })
   .then(() => {
-    console.info(`Connect to db ${DB_NAME}`);
+    console.info(`Connect to db ${MONGODB}`);
   })
   .catch(error => {
-    console.error(`Unable to connect to db ${DB_NAME}: ${error}`);
+    console.error(`Unable to connect to db ${MONGODB}: ${error}`);
   });

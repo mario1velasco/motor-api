@@ -7,20 +7,35 @@
 const express = require("express");
 const passport = require('passport');
 const bodyParser = require('body-parser');
-const router = express.Router();
+const cors = require('cors');
+const session = require('express-session');
 
 /**
  * App Variables
  */
+require("dotenv").config();
 const app = express();
-const port = process.env.PORT || "8000";
+const port = process.env.PORT || "4040";
+const corsConfig = require('./config/cors.config');
 
 /**
  *  App Configuration
  */
+app.use(cors(corsConfig))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use('/', router);
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'mysuperpassword',
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    maxAge: 2419200000
+  }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 /**
  *  Ddbb Configuration
