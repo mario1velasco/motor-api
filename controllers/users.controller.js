@@ -3,6 +3,11 @@ const User = require('../models/user.model');
 const ApiError = require('../models/api-error.model');
 
 module.exports.create = (req, res, next) => {
+  if (!req.body.email | !req.body.password) {
+    res.status(400).json({
+      message: 'Email or password cannot be empty'
+    });
+  }
   User.findOne({
       email: req.body.email
     })
