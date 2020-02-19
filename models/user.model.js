@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
 
@@ -9,6 +10,10 @@ const ROLE_USER = 'USER';
 const ROLE_INVITED = 'INVITED';
 
 const userSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    unique: true
+  },
   email: {
     type: String,
     lowercase: true,
@@ -22,21 +27,24 @@ const userSchema = new mongoose.Schema({
     // match: [/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$/, 'Password: Minimum three characters, at least UpperCase, LowerCase and Number'],
     // match: [/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, 'Password: Minimum eight characters, at least one letter and one number'],
   },
-  // username: {
-  //   type: String,
-  //   required: [true, 'Username is required'],
-  //   unique: true
-  // },
-  // name: {
-  //   type: String
-  // },
-  // familyname: {
-  //   type: String
-  // },
+  username: {
+    type: String,
+    // required: [true, 'Username is required'],
+    unique: true
+  },
+  name: {
+    type: String
+  },
+  familyname: {
+    type: String
+  },
   // telephone: {
   //   type: String
   // },
   // about: {
+  //   type: String
+  // },
+  // photo: {
   //   type: String
   // },
   // role: {
@@ -55,9 +63,6 @@ const userSchema = new mongoose.Schema({
   //   type: String,
   //   default: "en"
   // },
-  // photo: {
-  //   type: String
-  // },
   // expireSuperUser:{
   //   type: String
   // }
@@ -74,6 +79,8 @@ const userSchema = new mongoose.Schema({
     }
   }
 });
+
+userSchema.plugin(AutoIncrement, {id:'order_seq',inc_field: 'id'});
 
 userSchema.pre('save', function save(next) {
   const user = this;

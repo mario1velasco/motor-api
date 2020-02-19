@@ -8,7 +8,7 @@ module.exports.create = (req, res, next) => {
     })
     .then(user => {
       if (user != null) {
-        res.status(400).json({
+        res.status(422).json({
           message: 'User already registered'
         });
       } else {
@@ -24,7 +24,10 @@ module.exports.create = (req, res, next) => {
           })
           .catch(error => {
             if (error instanceof mongoose.Error.ValidationError) {
-              next(new ApiError(error.errors, 400));
+              res.status(422).json({
+                message: 'Email or password have incorrect syntax',
+                error: error.errors
+              });
             } else {
               next(error);
             }
