@@ -60,7 +60,10 @@ module.exports.get = (req, res, next) => {
       if (user) {
         res.status(200).json(user);
       } else {
-        next(new ApiError(`User not found`, 404));
+        res.status(404).json({
+          message: 'User not found',
+          error: error.errors
+        });
       }
     }).catch(error => next(error));
 }

@@ -10,7 +10,8 @@ const ROLE_USER = 'USER';
 const ROLE_INVITED = 'INVITED';
 
 const userSchema = new mongoose.Schema({
-  id: {
+  _id: Number,
+  userid: {
     type: Number,
     unique: true
   },
@@ -67,10 +68,11 @@ const userSchema = new mongoose.Schema({
   //   type: String
   // }
 }, {
+  id: false,
   timestamps: true,
   toJSON: {
     transform: (doc, ret) => {
-      // ret.id = doc._id;
+      ret.id = doc._id;
       delete ret._id;
       delete ret.__v;
       delete ret.password;
@@ -80,7 +82,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.plugin(AutoIncrement, {id:'order_seq',inc_field: 'id'});
+userSchema.plugin(AutoIncrement);
 
 userSchema.pre('save', function save(next) {
   const user = this;
