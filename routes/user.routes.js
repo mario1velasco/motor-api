@@ -7,6 +7,7 @@ const secureMiddleware = require('../middleware/secure.middleware');
 
 router.post('/', usersController.create);
 router.get('/:id', secureMiddleware.isAuthenticated, usersController.get);
+router.put('/:id', secureMiddleware.isAuthenticated, usersController.edit);
 // router.get('/', secureMiddleware.isAuthenticated, usersController.show);
 // router.get('/:id', usersController.get);
 // router.put('/:id', secureMiddleware.isAuthenticated, userAccessMiddleware.gotAccess, usersController.edit);

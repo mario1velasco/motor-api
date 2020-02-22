@@ -11,10 +11,6 @@ const ROLE_INVITED = 'INVITED';
 
 const userSchema = new mongoose.Schema({
   _id: Number,
-  userid: {
-    type: Number,
-    unique: true
-  },
   email: {
     type: String,
     lowercase: true,
@@ -33,18 +29,18 @@ const userSchema = new mongoose.Schema({
     // required: [true, 'Username is required'],
     unique: true
   },
-  name: {
+  firstName: {
     type: String
   },
-  familyname: {
+  lastName: {
     type: String
   },
-  // telephone: {
-  //   type: String
-  // },
-  // about: {
-  //   type: String
-  // },
+  telephone: {
+    type: String
+  },
+  about: {
+    type: String
+  },
   // photo: {
   //   type: String
   // },

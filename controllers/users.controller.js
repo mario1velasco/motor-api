@@ -48,7 +48,10 @@ module.exports.show = (req, res, next) => {
       if (users) {
         res.status(200).json(users);
       } else {
-        next(new ApiError(`Users not found`, 404));
+        res.status(404).json({
+          message: 'User not found',
+          error: error.errors
+        });
       }
     }).catch(error => next(error));
 }
@@ -70,7 +73,6 @@ module.exports.get = (req, res, next) => {
 
 module.exports.edit = (req, res, next) => {
   const id = req.params.id;
-
   User.findByIdAndUpdate(id, {
       $set: req.body
     }, {
@@ -78,30 +80,36 @@ module.exports.edit = (req, res, next) => {
     })
     .then(user => {
       if (user) {
-        if (user.name && user.familyname && user.telephone) {
-          user.role = 'SUPERUSER';
-        } else {
-          user.role = 'USER';
-        }
         user.save()
           .then(() => {
             res.status(200).json(user);
           })
           .catch(error => {
             if (error instanceof mongoose.Error.ValidationError) {
-              next(new ApiError(error.errors, 400));
+              res.status(422).json({
+                message: 'mongoose.Error.ValidationError',
+                error: error.errors
+              });
             } else {
               next(error);
             }
           });
       } else {
-        next(new ApiError(`User not found`, 404));
+        res.status(404).json({
+          message: 'User not found',
+          error: error.errors
+        });
       }
     }).catch(error => {
       if (error instanceof mongoose.Error.ValidationError) {
-        next(new ApiError(error.message, 400, error.errors));
+        res.status(422).json({
+          message: 'mongoose.Error.ValidationError',
+          error: error.errors
+        });
       } else {
-        next(new ApiError(error.message, 500));
+        res.status(500).json({
+          message: error.message,
+        });
       }
     });
 }
