@@ -51,9 +51,11 @@ require('./config/passport.config').setup(passport);
 // const usersRoutes = require('./routes/user.routes');
 const sessionRoutes = require('./routes/session.routes');
 const usersRoutes = require('./routes/user.routes');
+const advertsRoutes = require('./routes/advert.routes');
 
 app.use('/session', sessionRoutes);
 app.use('/users', usersRoutes);
+app.use('/adverts', advertsRoutes);
 
 
 /**

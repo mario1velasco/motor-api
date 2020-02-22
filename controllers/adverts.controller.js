@@ -1,35 +1,37 @@
 const mongoose = require('mongoose');
-const User = require('../models/user.model');
+const Advert = require('../models/advert.model');
 
 module.exports.create = (req, res, next) => {
-  if (!req.body.email | !req.body.password) {
+  if (!req.body.title | !req.body.description | !req.body.price) {
     res.status(400).json({
-      message: 'Email or password cannot be empty'
+      message: 'Some elements cannot be empty'
     });
   }
-  User.findOne({
-      email: req.body.email
-    })
-    .then(user => {
-      if (user != null) {
+  Advert.findOne({
+    title: req.body.title
+  })
+  .then(advert => {
+      if (advert != null) {
         res.status(422).json({
-          message: 'User already registered'
+          message: 'Advert already registered'
         });
       } else {
-        user = new User({
-          email: req.body.email,
-          password: req.body.password,
+        advert = new Advert({
+          title: req.body.title,
+          description: req.body.description,
+          price: req.body.price,
+          city: req.body.city,
         });
-        user
+        advert
           .save()
           .then(() => {
-            console.log(`User ${user.email} has been created`);
-            res.status(200).json(user);
+            console.log(`Advert ${advert.title} has been created`);
+            res.status(200).json(advert);
           })
           .catch(error => {
             if (error instanceof mongoose.Error.ValidationError) {
               res.status(422).json({
-                message: 'Email or password have incorrect syntax',
+                message: 'mongoose.Error.ValidationError',
                 error: error.errors
               });
             } else {
@@ -42,13 +44,13 @@ module.exports.create = (req, res, next) => {
 }
 
 module.exports.show = (req, res, next) => {
-  User.find()
-    .then(users => {
-      if (users) {
-        res.status(200).json(users);
+  Advert.find()
+    .then(adverts => {
+      if (adverts) {
+        res.status(200).json(adverts);
       } else {
         res.status(404).json({
-          message: 'User not found',
+          message: 'Advert not found',
           error: error.errors
         });
       }
@@ -57,15 +59,13 @@ module.exports.show = (req, res, next) => {
 
 module.exports.get = (req, res, next) => {
   const id = req.params.id;
-  User.findOne({
-    userId: id
-  })
-    .then(user => {
-      if (user) {
-        res.status(200).json(user);
+  Advert.findById(id)
+    .then(advert => {
+      if (advert) {
+        res.status(200).json(advert);
       } else {
         res.status(404).json({
-          message: 'User not found',
+          message: 'Advert not found',
           error: error.errors
         });
       }
@@ -74,16 +74,16 @@ module.exports.get = (req, res, next) => {
 
 module.exports.edit = (req, res, next) => {
   const id = req.params.id;
-  User.findOneAndUpdate({userId: id}, {
+  Advert.findByIdAndUpdate(id, {
       $set: req.body
     }, {
       new: true
     })
-    .then(user => {
-      if (user) {
-        user.save()
+    .then(advert => {
+      if (advert) {
+        advert.save()
           .then(() => {
-            res.status(200).json(user);
+            res.status(200).json(advert);
           })
           .catch(error => {
             if (error instanceof mongoose.Error.ValidationError) {
@@ -97,7 +97,7 @@ module.exports.edit = (req, res, next) => {
           });
       } else {
         res.status(404).json({
-          message: 'User not found',
+          message: 'Advert not found',
           error: error.errors
         });
       }

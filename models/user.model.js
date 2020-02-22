@@ -1,16 +1,10 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
-const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
 
-const ROLE_ADMIN = 'ADMIN';
-const ROLE_SUPERUSER = 'SUPERUSER';
-const ROLE_USER = 'USER';
-const ROLE_INVITED = 'INVITED';
-
 const userSchema = new mongoose.Schema({
-  _id: Number,
+  userId: Number,
   email: {
     type: String,
     lowercase: true,
@@ -41,35 +35,13 @@ const userSchema = new mongoose.Schema({
   about: {
     type: String
   },
-  // photo: {
-  //   type: String
-  // },
-  // role: {
-  //   type: String,
-  //   enum: [ROLE_ADMIN, ROLE_SUPERUSER, ROLE_USER, ROLE_INVITED],
-  //   default: ROLE_USER
-  // },
-  // friends: {
-  //   type: [{
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: 'User'
-  //   }],
-  //   default: []
-  // },
-  // language: {
-  //   type: String,
-  //   default: "en"
-  // },
-  // expireSuperUser:{
-  //   type: String
-  // }
 }, {
-  id: false,
   timestamps: true,
   toJSON: {
     transform: (doc, ret) => {
-      ret.id = doc._id;
+      ret.id = doc.userId;
       delete ret._id;
+      delete ret.userId;
       delete ret.__v;
       delete ret.password;
 
@@ -78,16 +50,14 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.plugin(AutoIncrement);
+userSchema.plugin(AutoIncrement, {inc_field: 'userId'});
+// userSchema.plugin(AutoIncrement);
 
 userSchema.pre('save', function save(next) {
   const user = this;
   if (!user.isModified('password')) {
     return next();
   }
-  // if (user.isAdmin()) {
-  //   user.role = 'ADMIN';
-  // }
   bcrypt.genSalt(SALT_WORK_FACTOR)
     .then(salt => {
       bcrypt.hash(user.password, salt)
@@ -103,10 +73,6 @@ userSchema.pre('save', function save(next) {
 userSchema.methods.checkPassword = function (password) {
   return bcrypt.compare(password, this.password);
 }
-
-// userSchema.methods.isAdmin = function () {
-//   return this.username === ROLE_ADMIN;
-// };
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

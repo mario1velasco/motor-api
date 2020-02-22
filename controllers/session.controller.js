@@ -1,5 +1,4 @@
 const passport = require('passport');
-const ApiError = require('../models/api-error.model');
 
 module.exports.authenticate = (req, res, next) => {
   const email = req.body.email;
