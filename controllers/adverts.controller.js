@@ -46,7 +46,12 @@ module.exports.create = (req, res, next) => {
     .catch(error => next(error));
 }
 
-module.exports.show = (req, res, next) => {
+module.exports.get = (req, res, next) => {
+  console.log("AAAAAAAAAAAAAAAAa");
+  console.log(req.get('host'));
+  console.log(req.protocol);
+  console.log(req.originalUrl);
+  console.log("AAAAAAAAAAAAAAAAa");
   if (req.query.user) {
     User.findOne({
       userId: req.query.user
@@ -73,7 +78,7 @@ module.exports.show = (req, res, next) => {
     }).catch(error => next(error));
 
   } else {
-    Advert.find({user: req.query.user})
+    Advert.find()
       .then(adverts => {
         if (adverts) {
           res.status(200).json(adverts);
@@ -88,8 +93,10 @@ module.exports.show = (req, res, next) => {
   }
 }
 
-module.exports.get = (req, res, next) => {
+module.exports.show = (req, res, next) => {
   const id = req.params.id;
+  console.log(`ID= ${id}`);
+
   Advert.findById(id)
     .then(advert => {
       if (advert) {

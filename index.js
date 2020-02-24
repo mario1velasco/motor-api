@@ -5,6 +5,7 @@
  */
 
 const express = require("express");
+const path = require('path');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -22,6 +23,7 @@ const corsConfig = require('./config/cors.config');
  *  App Configuration
  */
 app.use(cors(corsConfig))
+// app.use(cors({credentials: true, origin: 'http://localhost:8080'}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
@@ -47,15 +49,21 @@ require('./config/passport.config').setup(passport);
 /**
  * Routes Definitions
  */
-
-// const usersRoutes = require('./routes/user.routes');
+const router = express.Router();
+const advertsRoutes = require('./routes/advert.routes');
 const sessionRoutes = require('./routes/session.routes');
 const usersRoutes = require('./routes/user.routes');
-const advertsRoutes = require('./routes/advert.routes');
+const advertsController = require('./controllers/adverts.controller');
+const secureMiddleware = require('./middleware/secure.middleware');
 
-app.use('/session', sessionRoutes);
-app.use('/users', usersRoutes);
+
+
+// router.get('/adverts', advertsController.get);
+// router.get('/adverts/:id', advertsController.show);
+// router.post('/adverts', secureMiddleware.isAuthenticated, advertsController.create);
 app.use('/adverts', advertsRoutes);
+app.use('/users', usersRoutes);
+app.use('/session', sessionRoutes);
 
 
 /**
