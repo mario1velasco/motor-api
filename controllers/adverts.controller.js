@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Advert = require('../models/advert.model');
+const User = require('../models/user.model');
 
 module.exports.create = (req, res, next) => {
   if (!req.body.title | !req.body.description | !req.body.price) {
@@ -7,6 +8,7 @@ module.exports.create = (req, res, next) => {
       message: 'Some elements cannot be empty'
     });
   }
+
   Advert.findOne({
     title: req.body.title
   })
@@ -21,6 +23,7 @@ module.exports.create = (req, res, next) => {
           description: req.body.description,
           price: req.body.price,
           city: req.body.city,
+          user: req.user._id
         });
         advert
           .save()
@@ -44,17 +47,45 @@ module.exports.create = (req, res, next) => {
 }
 
 module.exports.show = (req, res, next) => {
-  Advert.find()
-    .then(adverts => {
-      if (adverts) {
-        res.status(200).json(adverts);
+  if (req.query.user) {
+    User.findOne({
+      userId: req.query.user
+    })
+    .then(user => {
+      if (user) {
+        Advert.find({user: user._id})
+        .then(adverts => {
+          if (adverts) {
+            res.status(200).json(adverts);
+          } else {
+            res.status(404).json({
+              message: 'Adverts not found',
+              error: error.errors
+            });
+          }
+        }).catch(error => next(error));
       } else {
         res.status(404).json({
-          message: 'Advert not found',
+          message: 'User not found',
           error: error.errors
         });
       }
     }).catch(error => next(error));
+
+  } else {
+    Advert.find({user: req.query.user})
+      .then(adverts => {
+        if (adverts) {
+          res.status(200).json(adverts);
+        } else {
+          res.status(404).json({
+            message: 'Adverts not found',
+            error: error.errors
+          });
+        }
+      }).catch(error => next(error));
+
+  }
 }
 
 module.exports.get = (req, res, next) => {

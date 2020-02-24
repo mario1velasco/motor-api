@@ -60,16 +60,16 @@ module.exports.get = (req, res, next) => {
   User.findOne({
     userId: id
   })
-    .then(user => {
-      if (user) {
-        res.status(200).json(user);
-      } else {
-        res.status(404).json({
-          message: 'User not found',
-          error: error.errors
-        });
-      }
-    }).catch(error => next(error));
+  .then(user => {
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({
+        message: 'User not found',
+        error: error.errors
+      });
+    }
+  }).catch(error => next(error));
 }
 
 module.exports.edit = (req, res, next) => {

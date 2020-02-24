@@ -6,7 +6,7 @@ const advertSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, 'Advert needs a title'],
-    unique: true
+    unique: true,
   },
   description: {
     type: String,
@@ -18,6 +18,12 @@ const advertSchema = new mongoose.Schema({
   price: {
     type: String,
     required: [true, 'Advert needs a price'],
+  },
+  user: {
+    type: {
+      type: mongoose.Schema.Types.userId,
+      ref: 'User'
+    },
   },
 }, {
   timestamps: true,
