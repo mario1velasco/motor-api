@@ -72,6 +72,23 @@ module.exports.get = (req, res, next) => {
   }).catch(error => next(error));
 }
 
+module.exports.getByObjectId = (req, res, next) => {
+  const id = req.params.id;
+  User.findOne({
+    _id: id
+  })
+  .then(user => {
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({
+        message: 'User not found',
+        error: error.errors
+      });
+    }
+  }).catch(error => next(error));
+}
+
 module.exports.edit = (req, res, next) => {
   const id = req.params.id;
   User.findOneAndUpdate({userId: id}, {

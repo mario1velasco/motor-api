@@ -8,50 +8,44 @@ module.exports.create = (req, res, next) => {
       message: 'Some elements cannot be empty'
     });
   }
-
   Advert.findOne({
     title: req.body.title
   })
   .then(advert => {
-      if (advert != null) {
-        res.status(422).json({
-          message: 'Advert already registered'
+    if (advert != null) {
+      res.status(422).json({
+        message: 'Advert already registered'
+      });
+    } else {
+      advert = new Advert({
+        title: req.body.title,
+        description: req.body.description,
+        price: req.body.price,
+        city: req.body.city,
+        user: req.user._id
+      });
+      advert
+        .save()
+        .then(() => {
+          console.log(`Advert ${advert.title} has been created`);
+          res.status(200).json(advert);
+        })
+        .catch(error => {
+          if (error instanceof mongoose.Error.ValidationError) {
+            res.status(422).json({
+              message: 'mongoose.Error.ValidationError',
+              error: error.errors
+            });
+          } else {
+            next(error);
+          }
         });
-      } else {
-        advert = new Advert({
-          title: req.body.title,
-          description: req.body.description,
-          price: req.body.price,
-          city: req.body.city,
-          user: req.user._id
-        });
-        advert
-          .save()
-          .then(() => {
-            console.log(`Advert ${advert.title} has been created`);
-            res.status(200).json(advert);
-          })
-          .catch(error => {
-            if (error instanceof mongoose.Error.ValidationError) {
-              res.status(422).json({
-                message: 'mongoose.Error.ValidationError',
-                error: error.errors
-              });
-            } else {
-              next(error);
-            }
-          });
       }
     })
     .catch(error => next(error));
 }
 
 module.exports.get = (req, res, next) => {
-  console.log("AAAAAAAAAAAAAAAAa");
-  console.log(req.get('host'));
-  console.log(req.protocol);
-  console.log(req.originalUrl);
-  console.log("AAAAAAAAAAAAAAAAa");
   if (req.query.user) {
     User.findOne({
       userId: req.query.user
@@ -76,79 +70,93 @@ module.exports.get = (req, res, next) => {
         });
       }
     }).catch(error => next(error));
-
   } else {
     Advert.find()
-      .then(adverts => {
-        if (adverts) {
-          res.status(200).json(adverts);
-        } else {
-          res.status(404).json({
-            message: 'Adverts not found',
-            error: error.errors
-          });
-        }
-      }).catch(error => next(error));
-
+    .then(adverts => {
+      if (adverts) {
+        res.status(200).json(adverts);
+      } else {
+        res.status(404).json({
+          message: 'Adverts not found',
+          error: error.errors
+        });
+      }
+    }).catch(error => next(error));
   }
 }
 
 module.exports.show = (req, res, next) => {
   const id = req.params.id;
-  console.log(`ID= ${id}`);
-
-  Advert.findById(id)
-    .then(advert => {
-      if (advert) {
-        res.status(200).json(advert);
-      } else {
-        res.status(404).json({
-          message: 'Advert not found',
-          error: error.errors
-        });
-      }
-    }).catch(error => next(error));
+  Advert.findOne({
+    advertId: id
+  })
+  .then(advert => {
+    if (advert) {
+      res.status(200).json(advert);
+    } else {
+      res.status(404).json({
+        message: 'Advert not found',
+        error: error.errors
+      });
+    }
+  }).catch(error => next(error));
 }
 
 module.exports.edit = (req, res, next) => {
   const id = req.params.id;
-  Advert.findByIdAndUpdate(id, {
-      $set: req.body
-    }, {
-      new: true
-    })
-    .then(advert => {
-      if (advert) {
-        advert.save()
-          .then(() => {
-            res.status(200).json(advert);
-          })
-          .catch(error => {
-            if (error instanceof mongoose.Error.ValidationError) {
-              res.status(422).json({
-                message: 'mongoose.Error.ValidationError',
-                error: error.errors
-              });
-            } else {
-              next(error);
-            }
-          });
-      } else {
-        res.status(404).json({
-          message: 'Advert not found',
-          error: error.errors
+  Advert.findOneAndUpdate({advertId: id}, {
+    $set: req.body
+  }, {
+    new: true
+  })
+  .then(advert => {
+    if (advert) {
+      advert.save()
+        .then(() => {
+          res.status(200).json(advert);
+        })
+        .catch(error => {
+          if (error instanceof mongoose.Error.ValidationError) {
+            res.status(422).json({
+              message: 'mongoose.Error.ValidationError',
+              error: error.errors
+            });
+          } else {
+            next(error);
+          }
         });
-      }
-    }).catch(error => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        res.status(422).json({
-          message: 'mongoose.Error.ValidationError',
-          error: error.errors
-        });
-      } else {
-        res.status(500).json({
-          message: error.message,
-        });
-      }
-    });
+    } else {
+      res.status(404).json({
+        message: 'Advert not found',
+        error: error.errors
+      });
+    }
+  }).catch(error => {
+    if (error instanceof mongoose.Error.ValidationError) {
+      res.status(422).json({
+        message: 'mongoose.Error.ValidationError',
+        error: error.errors
+      });
+    } else {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  });
+}
+
+module.exports.destroy = (req, res, next) => {
+  const id = req.params.id;
+  Advert.findOneAndRemove({
+    advertId: id
+  })
+  .then(ok => {
+    if (ok) {
+      res.status(204).json();
+    } else {
+      res.status(404).json({
+        message: 'Advert not found',
+      });
+    }
+  }).catch(error => next(error));
 }
